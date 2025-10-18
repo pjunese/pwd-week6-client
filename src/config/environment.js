@@ -18,5 +18,3 @@ const environment = {
   };
   
   export { environment };
-
-  export { environment };
