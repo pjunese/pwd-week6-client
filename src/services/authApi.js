@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { environment } from '../config/environment';
+// import { environment } from '../config/environment';
+import { apiUrl } from '../config/environment';
 
 // Axios 인스턴스 생성
 const authInstance = axios.create({
-  baseURL: `${environment.API_URL}/api/auth`,
+  baseURL: `${apiUrl}/api/auth`,
   withCredentials: true, // 쿠키 포함 요청
   timeout: 10000,
 });
