@@ -26,8 +26,12 @@ authInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // 세션 만료 시 로그인 페이지로 리다이렉트
-      window.location.href = '/login';
+      // HashRouter 환경에서는 hash 기반으로 라우팅되므로
+      // 이미 로그인 화면이 아니라면 hash만 업데이트하여 무한 새로고침을 방지한다.
+      const loginHash = '#/login';
+      if (window.location.hash !== loginHash) {
+        window.location.hash = loginHash;
+      }
     }
     return Promise.reject(error);
   }
