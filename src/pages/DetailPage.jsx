@@ -5,6 +5,7 @@ import styled from '@emotion/styled';
 import { restaurantAPI } from '../services/api';
 import { FaStar, FaMapMarkerAlt, FaDollarSign, FaArrowLeft } from 'react-icons/fa';
 import { ClipLoader } from 'react-spinners';
+import resolveImageUrl from '../utils/image';
 
 const DetailContainer = styled.div`
   background: white;
@@ -74,6 +75,7 @@ function DetailPage() {
   }
 
   const restaurant = data.data;
+  const restaurantImage = resolveImageUrl(restaurant.image) || 'https://via.placeholder.com/600x400';
 
   return (
     <DetailContainer>
@@ -83,7 +85,7 @@ function DetailPage() {
       
       <h1>{restaurant.name}</h1>
       
-      <RestaurantImage src={restaurant.image} alt={restaurant.name} />
+      <RestaurantImage src={restaurantImage} alt={restaurant.name} />
       
       <InfoSection>
         <h3>기본 정보</h3>

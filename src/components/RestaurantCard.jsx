@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { FaStar, FaHeart, FaMapMarkerAlt, FaWonSign } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import resolveImageUrl from '../utils/image';
 
 // Styled Components는 그대로 유지
 const Card = styled.div`
@@ -149,7 +150,7 @@ function RestaurantCard({ restaurant }) {
         if (!likedRestaurants.includes(restaurant.id)) {
           likedRestaurants.push(restaurant.id);
         }
-        toast.success(`${restaurant.name}을(를) 좋아요했습니다! ❤️`);
+    toast.success(`${restaurant.name}을(를) 좋아요했습니다! ❤️`);
       } else {
         // 좋아요 취소
         const index = likedRestaurants.indexOf(restaurant.id);
@@ -181,10 +182,12 @@ function RestaurantCard({ restaurant }) {
     }
   };
 
+  const imageSrc = resolveImageUrl(restaurant.image) || 'https://via.placeholder.com/300';
+
   return (
     <Card>
       <CardImage 
-        src={restaurant.image || 'https://via.placeholder.com/300'} 
+        src={imageSrc} 
         alt={restaurant.name} 
       />
       <CardContent>
