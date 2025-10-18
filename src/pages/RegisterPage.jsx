@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
@@ -122,6 +122,11 @@ const SocialButton = styled.button`
     border-color: #667eea;
     background: #f8f9ff;
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const Divider = styled.div`
@@ -164,11 +169,36 @@ function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [authProviders, setAuthProviders] = useState({ google: false });
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
   
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch('password');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchAuthConfig = async () => {
+      try {
+        const response = await authApi.getAuthConfig();
+        if (isMounted && response.data.success) {
+          const providers = response.data.data?.providers || {};
+          setAuthProviders({
+            google: Boolean(providers.google),
+          });
+        }
+      } catch (error) {
+        console.error('OAuth 설정 정보를 불러오지 못했습니다.', error);
+      }
+    };
+
+    fetchAuthConfig();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -188,6 +218,10 @@ function RegisterPage() {
   };
 
   const handleGoogleLogin = () => {
+    if (!authProviders.google) {
+      toast.error('Google 로그인이 현재 비활성화되어 있습니다.');
+      return;
+    }
     window.location.href = `${apiUrl}/api/auth/google`;
   };
 
@@ -295,7 +329,7 @@ function RegisterPage() {
       </Divider>
 
       <SocialLoginContainer>
-        <SocialButton type="button" onClick={handleGoogleLogin}>
+        <SocialButton type="button" onClick={handleGoogleLogin} disabled={!authProviders.google}>
           <FaGoogle color="#4285F4" />
           Google로 회원가입
         </SocialButton>

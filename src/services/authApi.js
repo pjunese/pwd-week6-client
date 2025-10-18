@@ -55,6 +55,10 @@ export const authApi = {
   getCurrentUser: () => 
     authInstance.get('/me'),
 
+  // OAuth 설정 정보 조회
+  getAuthConfig: () =>
+    authInstance.get('/config'),
+
   // OAuth 콜백 처리
   handleOAuthCallback: (provider, code) => 
     authInstance.post(`/${provider}/callback`, { code }),

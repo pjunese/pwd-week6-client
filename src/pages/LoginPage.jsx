@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../services/authApi';
+import { apiUrl } from '../config/environment';
 import styled from '@emotion/styled';
 import { FaEye, FaEyeSlash, FaGoogle, FaUser, FaLock } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -121,6 +122,11 @@ const SocialButton = styled.button`
     border-color: #667eea;
     background: #f8f9ff;
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const Divider = styled.div`
@@ -162,6 +168,7 @@ const SignupLink = styled.div`
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [authProviders, setAuthProviders] = useState({ google: false, naver: false });
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -169,6 +176,31 @@ function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const from = location.state?.from?.pathname || '/dashboard';
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchAuthConfig = async () => {
+      try {
+        const response = await authApi.getAuthConfig();
+        if (isMounted && response.data.success) {
+          const providers = response.data.data?.providers || {};
+          setAuthProviders({
+            google: Boolean(providers.google),
+            naver: Boolean(providers.naver),
+          });
+        }
+      } catch (error) {
+        console.error('OAuth 설정 정보를 불러오지 못했습니다.', error);
+      }
+    };
+
+    fetchAuthConfig();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
@@ -187,22 +219,20 @@ function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const response = await authApi.getGoogleAuthUrl();
-      window.location.href = response.data.url;
-    } catch (error) {
-      toast.error('Google 로그인 설정에 문제가 있습니다.');
+  const handleGoogleLogin = () => {
+    if (!authProviders.google) {
+      toast.error('Google 로그인이 현재 비활성화되어 있습니다.');
+      return;
     }
+    window.location.href = `${apiUrl}/api/auth/google`;
   };
 
-  const handleNaverLogin = async () => {
-    try {
-      const response = await authApi.getNaverAuthUrl();
-      window.location.href = response.data.url;
-    } catch (error) {
-      toast.error('Naver 로그인 설정에 문제가 있습니다.');
+  const handleNaverLogin = () => {
+    if (!authProviders.naver) {
+      toast.error('Naver 로그인이 현재 비활성화되어 있습니다.');
+      return;
     }
+    window.location.href = `${apiUrl}/api/auth/naver`;
   };
 
   return (
@@ -266,12 +296,12 @@ function LoginPage() {
       </Divider>
 
       <SocialLoginContainer>
-        <SocialButton type="button" onClick={handleGoogleLogin}>
+        <SocialButton type="button" onClick={handleGoogleLogin} disabled={!authProviders.google}>
           <FaGoogle color="#4285F4" />
           Google로 로그인
         </SocialButton>
         
-        <SocialButton type="button" onClick={handleNaverLogin}>
+        <SocialButton type="button" onClick={handleNaverLogin} disabled={!authProviders.naver}>
           <span style={{ color: '#03C75A', fontWeight: 'bold' }}>N</span>
           Naver로 로그인
         </SocialButton>
