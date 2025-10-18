@@ -9,6 +9,12 @@ const authInstance = axios.create({
   timeout: 10000,
 });
 
+const usersInstance = axios.create({
+  baseURL: `${apiUrl}/api/users`,
+  withCredentials: true,
+  timeout: 10000,
+});
+
 // 요청 인터셉터 - 쿠키 자동 포함
 authInstance.interceptors.request.use(
   (config) => {
@@ -67,15 +73,15 @@ export const authApi = {
   admin: {
     // 모든 사용자 목록 조회
     getUsers: () => 
-      authInstance.get('/admin/users'),
+      usersInstance.get('/all'),
     
     // 사용자 권한 변경
     updateUserType: (userId, userType) => 
-      authInstance.put(`/admin/users/${userId}`, { userType }),
+      usersInstance.put(`/${userId}/type`, { userType }),
     
     // 사용자 삭제
     deleteUser: (userId) => 
-      authInstance.delete(`/admin/users/${userId}`)
+      usersInstance.delete(`/${userId}`)
   }
 };
 
