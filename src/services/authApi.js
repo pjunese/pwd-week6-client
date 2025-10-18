@@ -73,15 +73,15 @@ export const authApi = {
   admin: {
     // 모든 사용자 목록 조회
     getUsers: () => 
-      usersInstance.get('/all'),
+      usersInstance.get('/all').then((response) => response.data),
     
     // 사용자 권한 변경
     updateUserType: (userId, userType) => 
-      usersInstance.put(`/${userId}/type`, { userType }),
+      usersInstance.put(`/${userId}/type`, { userType }).then((response) => response.data),
     
     // 사용자 삭제
     deleteUser: (userId) => 
-      usersInstance.delete(`/${userId}`)
+      usersInstance.delete(`/${userId}`).then((response) => response.data)
   }
 };
 
