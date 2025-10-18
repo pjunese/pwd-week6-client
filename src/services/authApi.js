@@ -55,14 +55,6 @@ export const authApi = {
   getCurrentUser: () => 
     authInstance.get('/me'),
 
-  // Google OAuth 로그인 URL 생성
-  getGoogleAuthUrl: () => 
-    authInstance.get('/google/url'),
-
-  // Naver OAuth 로그인 URL 생성
-  getNaverAuthUrl: () => 
-    authInstance.get('/naver/url'),
-
   // OAuth 콜백 처리
   handleOAuthCallback: (provider, code) => 
     authInstance.post(`/${provider}/callback`, { code }),

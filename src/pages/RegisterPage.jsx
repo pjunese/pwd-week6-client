@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../services/authApi';
+import { apiUrl } from '../config/environment';
 import styled from '@emotion/styled';
 import { FaEye, FaEyeSlash, FaGoogle, FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -186,13 +187,8 @@ function RegisterPage() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const response = await authApi.getGoogleAuthUrl();
-      window.location.href = response.data.url;
-    } catch (error) {
-      toast.error('Google 로그인 설정에 문제가 있습니다.');
-    }
+  const handleGoogleLogin = () => {
+    window.location.href = `${apiUrl}/api/auth/google`;
   };
 
   return (

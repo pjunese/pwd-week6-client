@@ -22,7 +22,8 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true);
       const response = await authApi.getCurrentUser();
       if (response.data.success) {
-        setUser(response.data.user);
+        const currentUser = response.data.data?.user || null;
+        setUser(currentUser);
         setIsAuthenticated(true);
       } else {
         setUser(null);
@@ -42,7 +43,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authApi.login(email, password);
       if (response.data.success) {
-        setUser(response.data.user);
+        const loggedInUser = response.data.data?.user || null;
+        setUser(loggedInUser);
         setIsAuthenticated(true);
         return { success: true };
       } else {
@@ -58,7 +60,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authApi.register(name, email, password);
       if (response.data.success) {
-        setUser(response.data.user);
+        const newUser = response.data.data?.user || null;
+        setUser(newUser);
         setIsAuthenticated(true);
         return { success: true };
       } else {
